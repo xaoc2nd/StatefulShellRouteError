@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:goroutertest/Search/Search.dart';
+import 'package:goroutertest/model/user_model.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'Home/Home.dart';
 import 'NavBars/BottomNavBar.dart';
 import 'NavBars/NavRail.dart';
 import 'Conversations/Conv.dart';
+import 'Search/Search.dart';
+import 'Profile/SearchProfileDetailsScreen.dart';
+import 'Profile/SearchProfileTeamDetailsScreen.dart';
 
 //private navigators
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -40,7 +45,7 @@ final goRouter = GoRouter(
                 child: HomeScreen(
                     label: 'Home',
                     detailsPath: '/home/details',
-                    convPath: '/conversations'),
+                    convPath: '/home/conversations'),
               ),
               routes: [
                 GoRoute(
@@ -48,6 +53,22 @@ final goRouter = GoRouter(
                   builder: (context, state) =>
                       const DetailsScreen(label: 'Home'),
                 ),
+                GoRoute(
+                  //parentNavigatorKey: _rootNavigatorKey,
+                  path: 'conversations',
+                  pageBuilder: (context, state) => const NoTransitionPage(
+                      child: ConvScreen(
+                    label: 'Conversations',
+                    detailsPath: 'conversations/details',
+                  )),
+                  routes: [
+                    GoRoute(
+                      path: 'details',
+                      builder: (context, state) =>
+                          const DetailsScreen(label: 'Conversations'),
+                    ),
+                  ],
+                )
               ],
             ),
           ],
@@ -59,15 +80,23 @@ final goRouter = GoRouter(
             GoRoute(
               path: '/search',
               pageBuilder: (context, state) => const NoTransitionPage(
-                child:
-                    RootScreen(label: 'Search', detailsPath: '/search/details'),
+                child: SearchScreen(
+                    label: 'Search',
+                    profilePath: '/search/profile',
+                    profileTeamPath: '/search/profileteampath'),
               ),
               routes: [
                 GoRoute(
-                  path: 'Details',
+                  path: 'Profile',
                   builder: (context, state) =>
-                      const DetailsScreen(label: 'Search'),
+                      const SearchProfileDetailsScreen(label: 'Profile'),
                 ),
+                GoRoute(
+                  path: 'ProfileTeam',
+                  builder: (context, state) =>
+                      const SearchProfileTeamDetailsScreen(
+                          label: 'ProfileTeam'),
+                )
               ],
             ),
           ],
@@ -92,27 +121,28 @@ final goRouter = GoRouter(
             ),
           ],
         ),
-        StatefulShellBranch(
+/*         StatefulShellBranch(
           navigatorKey: _shellNavigatorConvKey,
           routes: [
             // Shopping Cart
             GoRoute(
+              //parentNavigatorKey: _rootNavigatorKey,
               path: '/conversations',
-              pageBuilder: (context, state) =>
-                  const NoTransitionPage(child: ConvScreen()
-                      //label: 'Conversations',
-                      //detailsPath: '/conversations/details'),
-                      ),
-              /* routes: [
+              pageBuilder: (context, state) => const NoTransitionPage(
+                  child: ConvScreen(
+                label: 'Conversations',
+                detailsPath: '/conversations/details',
+              )),
+              routes: [
                 GoRoute(
                   path: 'details',
                   builder: (context, state) =>
                       const DetailsScreen(label: 'Conversations'),
                 ),
-              ], */
+              ],
             ),
           ],
-        ),
+        ), */
         StatefulShellBranch(
           navigatorKey: _shellNavigatorAddKey,
           routes: [
@@ -180,6 +210,7 @@ class ScaffoldWithNestedNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
+      print(navigationShell.currentIndex);
       if (constraints.maxWidth < 450) {
         return ScaffoldWithNavigationBar(
           body: navigationShell,
@@ -240,6 +271,15 @@ class DetailsScreenState extends State<DetailsScreen> {
                 });
               },
               child: const Text('Increment counter'),
+            ),
+            TextButton(
+              onPressed: () {
+                GoRouter.of(context).go('/home');
+                // setState(() {
+                //   _counter++;
+                // });
+              },
+              child: const Text('Back Home'),
             ),
           ],
         ),

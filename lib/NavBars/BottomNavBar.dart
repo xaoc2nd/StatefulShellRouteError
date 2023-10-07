@@ -15,9 +15,13 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(GoRouterState.of(context).matchedLocation);
     return Scaffold(
       body: body,
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar /* : (GoRouterState.of(context).matchedLocation ==
+              '/home/conversations')
+          ? null */
+          : NavigationBar(
         selectedIndex: selectedIndex,
         destinations: const [
           NavigationDestination(label: 'Home', icon: Icon(Icons.home)),
